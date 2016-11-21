@@ -1,7 +1,7 @@
 <?xml version='1.0' encoding='UTF-8' standalone='yes'?>
 <WORKSPACE>
- <FRAME activewindow="1">
-  <PLACEMENT>2c00000002000000030000000083ffff0083ffffffffffffffffffff8300000009000000d4040000d0020000</PLACEMENT>
+ <FRAME activewindow="0">
+  <PLACEMENT>2c0000000200000003000000ffffffffffffffffffffffffffffffff8300000009000000d4040000d0020000</PLACEMENT>
   <WINDOW type="default" module="ISIS"/>
   <WINDOW type="default" module="VSMSTUDIO">
    <FILE LINE="645" ACTIVE="TRUE" FIRST="627" NAME="8086/io.asm" INDEX="6"/>
@@ -52,17 +52,17 @@
    </POPUP>
    <POPUP w="1352" x="6" flags="0000002b" y="125" h="351" pid="3" iid="4">
     <PROPERTIES>
-     <ITEM name="Breakpoint 0">"",0893,0000,5476,5010,-1
+     <ITEM name="Breakpoint 0">"",0893,0000,95D0,5010,-1
 </ITEM>
-     <ITEM name="Breakpoint 1">"",0899,0000,C180,5010,-1
+     <ITEM name="Breakpoint 1">"",0899,0000,4C2C,5010,-1
 </ITEM>
-     <ITEM name="Breakpoint 2">"",08A3,0000,C1A2,5010,-1
+     <ITEM name="Breakpoint 2">"",08A2,0000,5DA1,5010,-1
 </ITEM>
-     <ITEM name="Breakpoint 3">"",08AD,0000,31A2,5010,-1
+     <ITEM name="Breakpoint 3">"",08AD,0000,9602,5010,-1
 </ITEM>
-     <ITEM name="Breakpoint 4">"",08B7,0000,A1A3,5010,-1
+     <ITEM name="Breakpoint 4">"",08B6,0000,5DA1,5010,-1
 </ITEM>
-     <ITEM name="Breakpoint 5">"",08EE,0000,0024,5010,-1
+     <ITEM name="Breakpoint 5">"",08EF,0000,FD85,5010,-1
 </ITEM>
      <ITEM name="Breakpoint 6">"",08EE,0000,0024,5010,-1
 </ITEM>
