@@ -1,44 +1,53 @@
+;   FUNDACAO UNIVERSITARIA REGIONAL DE BLUMENAU - FURB
+;     DISCIPLINA: ARQUITETURA DE COMPUTADORES II
+;               SEMESTRE: 2016/2
+; ACADEMICOS: DIOVANI BERNARDI DA MOTTA, FELIPE CORSO E 
+;            GABRIEL DOS SANTOS RAITHZ   
+
+
 .MODEL	SMALL
-; I/O Address Bus decode - every device gets 0x200 addresses */
-IO0  EQU  0000h
-IO1  EQU  0200h
-IO2  EQU  0400h
-IO3  EQU  0600h
-IO4  EQU  0800h
-IO5  EQU  0A00h
-IO6  EQU  0C00h
-IO7  EQU  0E00h
-IO8  EQU  1000h
-IO9  EQU  1200h
-IO10 EQU  1400h
-IO11 EQU  1600h
-IO12 EQU  1800h
-IO13 EQU  1A00h
-IO14 EQU  1C00h
-IO15 EQU  1E00h
+; INICIO DO MAPEAMENTO DAS REGIOES DE MEMORIAS USADAS COMO I/O (INPUT/OUTPUT) DE DADOS PARA OS PERIFERICOS
+IO0  EQU  0000H
+IO1  EQU  0200H
+IO2  EQU  0400H
+IO3  EQU  0600H
+IO4  EQU  0800H
+IO5  EQU  0A00H
+IO6  EQU  0C00H
+IO7  EQU  0E00H
+IO8  EQU  1000H
+IO9  EQU  1200H
+IO10 EQU  1400H
+IO11 EQU  1600H
+IO12 EQU  1800H
+IO13 EQU  1A00H
+IO14 EQU  1C00H
+IO15 EQU  1E00H
 
-ADR_TIMER_DATA0   EQU  (IO3 + 00h)
-ADR_TIMER_DATA1   EQU  (IO3 + 02h)
-ADR_TIMER_DATA2   EQU  (IO3 + 04h)
-ADR_TIMER_CONTROL EQU  (IO3 + 06h)
+; MAPEAMENTO DAS REGIOES DE MEMORIAS USADAS PARA O CONTROLE DA COMUNICAÇÃO USART/SERIAL
+ADR_TIMER_DATA0   EQU  (IO3 + 00H)
+ADR_TIMER_DATA1   EQU  (IO3 + 02H)
+ADR_TIMER_DATA2   EQU  (IO3 + 04H)
+ADR_TIMER_CONTROL EQU  (IO3 + 06H)
 
-TIMER_COUNTER0	EQU 00h
-TIMER_COUNTER1	EQU 40h
-TIMER_COUNTER2	EQU 80h
+TIMER_COUNTER0	EQU 00H
+TIMER_COUNTER1	EQU 40H
+TIMER_COUNTER2	EQU 80H
 
-TIMER_LATCH	  EQU 00h
-TIMER_LSB	  EQU 10h
-TIMER_MSB	  EQU 20h
-TIMER_LSB_MSB 	  EQU 30h
+TIMER_LATCH	  EQU 00H
+TIMER_LSB	  EQU 10H
+TIMER_MSB	  EQU 20H
+TIMER_LSB_MSB 	  EQU 30H
 
-TIMER_MODE0	EQU 00h
-TIMER_MODE1	EQU 02h
-TIMER_MODE2	EQU 04h
-TIMER_MODE3	EQU 06h
-TIMER_MODE4	EQU 08h
-TIMER_MODE5	EQU 09h
-TIMER_BCD	EQU 01h
+TIMER_MODE0	EQU 00H
+TIMER_MODE1	EQU 02H
+TIMER_MODE2	EQU 04H
+TIMER_MODE3	EQU 06H
+TIMER_MODE4	EQU 08H
+TIMER_MODE5	EQU 09H
+TIMER_BCD	EQU 01H
 
+; MACRO QUE TEM COMO RESPONSABILIDADE INICIALIZAR O BEEP USADO PELO DESPERTADOR
 MACRO_INICIALIZA_8253_TIMER0 MACRO HIGH,LOW
    PUSHF
    PUSH AX
@@ -61,45 +70,39 @@ MACRO_INICIALIZA_8253_TIMER0 MACRO HIGH,LOW
    POPF
 ENDM
 
-; 8251A USART 
-ADR_USART_DATA EQU  (IO6 + 00h)
-;ONDE VOCE VAI MANDAR E RECEBER DADOS DO 8251
+; 8251A USART RESOURCES
 
-ADR_USART_CMD  EQU  (IO6 + 02h)
-;É O LOCAL ONDE VOCE VAI ESCREVER PARA PROGRAMAR O 8251
+ADR_USART_DATA EQU  (IO6 + 00H) ;ONDE VOCE VAI MANDAR E RECEBER DADOS DO 8251
+ADR_USART_CMD  EQU  (IO6 + 02H) ;É O LOCAL ONDE VOCE VAI ESCREVER PARA PROGRAMAR O 8251
+ADR_USART_STAT EQU  (IO6 + 02H)  ;RETORNA O STATUS SE UM CARACTER FOI DIGITADO
 
-ADR_USART_STAT EQU  (IO6 + 02h)
-;RETORNA O STATUS SE UM CARACTER FOI DIGITADO
-;RETORNA O STATUS SE POSSO TRANSMITIR CARACTER PARA O TERMINAL
-
-;Numeros
-DIG0 = 10111111B ;DEC = 191
-DIG1 = 10000110B ;DEC = 134
-DIG2 = 11011011B ;DEC = 219
-DIG3 = 11001111B ;DEC = 207
-DIG4 = 11100110B ;DEC = 230
-DIG5 = 11101101B ;DEC = 237
-DIG6 = 11111101B ;DEC = 253
-DIG7 = 10000111B ;DEC = 135
-DIG8 = 11111111B ;DEC = 255
-DIG9 = 11101111B ;DEC = 239
+;CODIFICACAO NECESSARIAS PARA EXIBIÇÃO DOS VALORES CONTABILIZADOS NO RELOGIO E QUE SERÃO ENVIADOS PARA O TERMINAL
+ZERO = 10111111B 
+ONE = 10000110B 
+TWO = 11011011B 
+THREE = 11001111B 
+FOUR = 11100110B 
+FIVE = 11101101B 
+SIX = 11111101B 
+SEVEN = 10000111B 
+EIGHT = 11111111B 
+NINE = 11101111B 
 
 
 .8086
 .CODE
-   ;assume    CS:code,DS:data
-   org 0008h
+   ORG 0008H
    PONTEIRO_TRATADOR_INTERRUPCAO DB 4 DUP(?) ; PONTEIRO PARA INTERRUPCAO
    ;APONTA PARA UMA ROTINA CHAMADA A CADA 1 SEGUNDO VIA HARDWARE INTERRUPT
    ;OBSERVE NO 8086 O PINO NMI, ELE ESTA RECEBENDO UM PULSO A CADA UM SEGUNDO, FORÇANDO A INTERRUPÇÃO
 
-   ;RESERVADO PARA VETOR DE INTERRUPCOES
-   org 0400h
+   ORG 0400H ;RESERVADO PARA VETOR DE INTERRUPCOES
 
-.startup
+.STARTUP
 	MOV AX,0000
 	MOV DS,AX
 	
+	; TRIGGER DE DISPARO PARA A INTERRUPCAO QUE OCORRERA A CADA 1 SEGUNDO
 	MOV WORD PTR PONTEIRO_TRATADOR_INTERRUPCAO, OFFSET INTERRUPT_ONE_SECOND
 	MOV WORD PTR PONTEIRO_TRATADOR_INTERRUPCAO + 2, SEG INTERRUPT_ONE_SECOND 
 
@@ -116,475 +119,483 @@ DIG9 = 11101111B ;DEC = 239
 
 LOOP_INI: JMP LOOP_INI	
 
+; ROTINA QUE SERÁ EXECUTADA A CADA UM SEGUNDO  E É INVOCADA AUTOMATICAMENTE PELO 8086 QUANDO HOUVER UMA INTERRUPCAO
 INTERRUPT_ONE_SECOND:
 	PUSHF 
-	PUSH AX
+	PUSH AX ; EMPILHA OS REGISTRADORES
 	PUSH DX
-	CMP leu_segundos, 01h
-	JNE rest
-	CALL ATUALIZAR_RELOGIO
-	CALL VERIFICA_DESPERTADOR
-	rest:
+	CMP LEU_SEGUNDOS, 01H ; VERIFICA SE ELE LEU UM SEGUNDO
+	JNE REST
+	CALL ATUALIZAR_RELOGIO ; INVOCA A ROTINA DE ATUALIZAÇÃO DO VALOR CONTIDO NO RELOGIO
+	CALL VERIFICA_DESPERTADOR ; VERIFICAR SE O HORARIO CORRENTE É O MESMO ARMAZENADO PELA ALARME
+	REST:
 	POP DX
 	POP AX
 	POPF
 	IRET
 
+; ROTINA QUE IRA INICIALIZAR TODOS OS DISPLAYS COM  VALOR ZERO	
 ZERA:
+    ; ESCREVE O VALOR ZERO PARA O DISPLAY CONECTADO NA PORTA IO0 
     MOV DX, IO0
-    MOV AL, DIG0
+    MOV AL, ZERO
     OUT DX, AL
-    
+    ; ESCREVE O VALOR ZERO PARA O DISPLAY CONECTADO NA PORTA IO1
     MOV DX, IO1
-    MOV AL, DIG0
+    MOV AL, ZERO
     OUT DX, AL
-    
+    ; ESCREVE O VALOR ZERO PARA O DISPLAY CONECTADO NA PORTA IO2
     MOV DX, IO2
-    MOV AL, DIG0
+    MOV AL, ZERO
     OUT DX, AL
-    
+    ; ESCREVE O VALOR ZERO PARA O DISPLAY CONECTADO NA PORTA IO3
     MOV DX, IO3
-    MOV AL, DIG0
+    MOV AL, ZERO
     OUT DX, AL
-    
+    ; ESCREVE O VALOR ZERO PARA O DISPLAY CONECTADO NA PORTA IO4
     MOV DX, IO4
-    MOV AL, DIG0
+    MOV AL, ZERO
     OUT DX, AL
-    
+    ; ESCREVE O VALOR ZERO PARA O DISPLAY CONECTADO NA PORTA IO5
     MOV DX, IO5
-    MOV AL, DIG0
+    MOV AL, ZERO
     OUT DX, AL
     
     RET
 
+; ROTINA QUE SERÁ USADA PARA EFETUAR A ATUALIZACAO DO RELOGIO    
 ATUALIZAR_RELOGIO:
-    cmp hor_dez,32h
-    jne continua
-    cmp hor_uni,34h
-    je zera_hor_dez
-    continua:
-    cmp hor_uni,39h
-    je zera_hor_uni
-    cmp min_dez,36h
-    je zera_min_dez
-    cmp min_uni,39h
-    je zera_min_uni
-    cmp seg_dez,36h
-    je zera_seg_dez
-    cmp seg_uni,39h
-    je zera_seg_uni
-    inc seg_uni
-    jmp seg_uni_show
+    CMP HOR_DEZ,32H
+    JNE CONTINUA
+    CMP HOR_UNI,34H
+    JE ZERA_HOR_DEZ
 
-zera_seg_uni:
-    mov seg_uni,30h
-    inc seg_dez
-    jmp seg_dez_show
-zera_seg_dez:
-    mov seg_dez,30h
-    inc min_uni
-    jmp min_uni_show
-zera_min_uni:
-    mov min_uni,30h
-    inc min_dez
-    jmp min_dez_show
-zera_min_dez:
-    mov min_dez,30h
-    inc hor_uni
-    jmp hor_uni_show
-zera_hor_uni:
-    mov hor_uni,30h
-    inc hor_dez
-    jmp hor_dez_show 
-zera_hor_dez:
-    mov hor_dez,30h
-    mov hor_uni,30h
-    mov min_dez,30h
-    mov min_uni,30h
-    mov seg_dez,30h
-    mov seg_uni,30h
-    jmp ZERA
+; ROTINA QUE EFETUA O PROCESSO DE CONTROLE PARA VERIFICAR OS LIMITES HORARIOS (23:59:59)    
+CONTINUA:
+    CMP HOR_UNI,39H  
+    JE ZERA_HOR_UNI
+    CMP MIN_DEZ,36H ; VERIFICAR SE FOI ATINGIDO O VALOR MAXIMO PERMITIDO PARA A DEZENA DE MINUTO (6)
+    JE ZERA_MIN_DEZ
+    CMP MIN_UNI,39H ; VERIFICAR SE FOI ATINGIDO O VALOR MAXIMO PERMITIDO PARA A UNIDADE DE MINUTO (9)
+    JE ZERA_MIN_UNI
+    CMP SEG_DEZ,36H ; VERIFICAR SE FOI ATINGIDO O VALOR MAXIMO PERMITIDO PARA A DEZENA DE SEGUNDO (6)
+    JE ZERA_SEG_DEZ
+    CMP SEG_UNI,39H ; VERIFICAR SE FOI ATINGIDO O VALOR MAXIMO PERMITIDO PARA A UNIDADE DE MINUTO (9)
+    JE ZERA_SEG_UNI
+    INC SEG_UNI ; INCREMENTA O VALOR DOS SEGUNDO
+    JMP SEG_UNI_SHOW ; EXIBE O VALOR NO DISPLAY DO RELOGIO
 
-;Verificando que número da unidade dos segundos deve ser exibida
-seg_uni_show:
-    cmp seg_uni, 30h
-    je seg_uni_0
-    cmp seg_uni, 31h 
-    je seg_uni_1
-    cmp seg_uni, 32h 
-    je seg_uni_2
-    cmp seg_uni, 33h 
-    je seg_uni_3
-    cmp seg_uni, 34h
-    je seg_uni_4
-    cmp seg_uni, 35h 
-    je seg_uni_5
-    cmp seg_uni, 36h 
-    je seg_uni_6
-    cmp seg_uni, 37h 
-    je seg_uni_7
-    cmp seg_uni, 38h 
-    je seg_uni_8
-    cmp seg_uni, 39h
-    je seg_uni_9
+; ROTINAS RESPONSAVEIS POR ZERAR O VALOR CONTIDO NOS DISPLAYS    
+ZERA_SEG_UNI:
+    MOV SEG_UNI,30H
+    INC SEG_DEZ ; ESTOURA A UNIDADE DE SEGUNDO E INCREMENTA A DEZENA DE SEGUNDO
+    JMP SEG_DEZ_SHOW
+ZERA_SEG_DEZ:
+    MOV SEG_DEZ,30H
+    INC MIN_UNI ; ESTOURA A DEZENA DE SEGUNDO E INCREMENTA A UNIDADE DE SEGUNDO
+    JMP MIN_UNI_SHOW
+ZERA_MIN_UNI:
+    MOV MIN_UNI,30H
+    INC MIN_DEZ 
+    JMP MIN_DEZ_SHOW
+ZERA_MIN_DEZ:
+    MOV MIN_DEZ,30H
+    INC HOR_UNI
+    JMP HOR_UNI_SHOW
+ZERA_HOR_UNI:
+    MOV HOR_UNI,30H
+    INC HOR_DEZ
+    JMP HOR_DEZ_SHOW 
+ZERA_HOR_DEZ:
+    MOV HOR_DEZ,30H ; ZERA O VALOR DE TODOS OS DISPLAYS
+    MOV HOR_UNI,30H
+    MOV MIN_DEZ,30H
+    MOV MIN_UNI,30H
+    MOV SEG_DEZ,30H
+    MOV SEG_UNI,30H
+    JMP ZERA
 
-;Verificando que número da dezena dos segundos deve ser exibida	
-seg_dez_show:
-    cmp seg_dez, 30h
-    je seg_dez_0
-    cmp seg_dez, 31h 
-    je seg_dez_1
-    cmp seg_dez, 32h 
-    je seg_dez_2
-    cmp seg_dez, 33h 
-    je seg_dez_3
-    cmp seg_dez, 34h
-    je seg_dez_4
-    cmp seg_dez, 35h 
-    je seg_dez_5
+;ROTINA VERIFICANDO QUE NÚMERO DA UNIDADE DOS SEGUNDOS DEVE SER EXIBIDA
+SEG_UNI_SHOW:
+    CMP SEG_UNI, 30H
+    JE SEG_UNI_0
+    CMP SEG_UNI, 31H 
+    JE SEG_UNI_1
+    CMP SEG_UNI, 32H 
+    JE SEG_UNI_2
+    CMP SEG_UNI, 33H 
+    JE SEG_UNI_3
+    CMP SEG_UNI, 34H
+    JE SEG_UNI_4
+    CMP SEG_UNI, 35H 
+    JE SEG_UNI_5
+    CMP SEG_UNI, 36H 
+    JE SEG_UNI_6
+    CMP SEG_UNI, 37H 
+    JE SEG_UNI_7
+    CMP SEG_UNI, 38H 
+    JE SEG_UNI_8
+    CMP SEG_UNI, 39H
+    JE SEG_UNI_9
 
-;Verificando que número da unidade dos minutos deve ser exibida
-min_uni_show:
-    cmp min_uni, 30h
-    je min_uni_0
-    cmp min_uni, 31h 
-    je min_uni_1
-    cmp min_uni, 32h 
-    je min_uni_2
-    cmp min_uni, 33h 
-    je min_uni_3
-    cmp min_uni, 34h
-    je min_uni_4
-    cmp min_uni, 35h 
-    je min_uni_5
-    cmp min_uni, 36h 
-    je min_uni_6
-    cmp min_uni, 37h 
-    je min_uni_7
-    cmp min_uni, 38h 
-    je min_uni_8
-    cmp min_uni, 39h
-    je min_uni_9
+;ROTINA VERIFICANDO QUE NÚMERO DA DEZENA DOS SEGUNDOS DEVE SER EXIBIDA	
+SEG_DEZ_SHOW:
+    CMP SEG_DEZ, 30H
+    JE SEG_DEZ_0
+    CMP SEG_DEZ, 31H 
+    JE SEG_DEZ_1
+    CMP SEG_DEZ, 32H 
+    JE SEG_DEZ_2
+    CMP SEG_DEZ, 33H 
+    JE SEG_DEZ_3
+    CMP SEG_DEZ, 34H
+    JE SEG_DEZ_4
+    CMP SEG_DEZ, 35H 
+    JE SEG_DEZ_5
 
-;Verificando que número da dezena dos minutos deve ser exibida	
-min_dez_show:
-    cmp min_dez, 30h
-    je min_dez_0
-    cmp min_dez, 31h 
-    je min_dez_1
-    cmp min_dez, 32h 
-    je min_dez_2
-    cmp min_dez, 33h 
-    je min_dez_3
-    cmp min_dez, 34h
-    je min_dez_4
-    cmp min_dez, 35h 
-    je min_dez_5
+;ROTINA VERIFICANDO QUE NÚMERO DA UNIDADE DOS MINUTOS DEVE SER EXIBIDA
+MIN_UNI_SHOW:
+    CMP MIN_UNI, 30H
+    JE MIN_UNI_0
+    CMP MIN_UNI, 31H 
+    JE MIN_UNI_1
+    CMP MIN_UNI, 32H 
+    JE MIN_UNI_2
+    CMP MIN_UNI, 33H 
+    JE MIN_UNI_3
+    CMP MIN_UNI, 34H
+    JE MIN_UNI_4
+    CMP MIN_UNI, 35H 
+    JE MIN_UNI_5
+    CMP MIN_UNI, 36H 
+    JE MIN_UNI_6
+    CMP MIN_UNI, 37H 
+    JE MIN_UNI_7
+    CMP MIN_UNI, 38H 
+    JE MIN_UNI_8
+    CMP MIN_UNI, 39H
+    JE MIN_UNI_9
 
-;Verificando que número da unidade das horas deve ser exibida
-hor_uni_show:
-    cmp hor_uni, 30h
-    je hor_uni_0
-    cmp hor_uni, 31h 
-    je hor_uni_1
-    cmp hor_uni, 32h 
-    je hor_uni_2
-    cmp hor_uni, 33h 
-    je hor_uni_3
-    cmp hor_uni, 34h
-    je hor_uni_4
-    cmp hor_uni, 35h 
-    je hor_uni_5
-    cmp hor_uni, 36h 
-    je hor_uni_6
-    cmp hor_uni, 37h 
-    je hor_uni_7
-    cmp hor_uni, 38h 
-    je hor_uni_8
-    cmp hor_uni, 39h
-    je hor_uni_9
+;ROTINA VERIFICANDO QUE NÚMERO DA DEZENA DOS MINUTOS DEVE SER EXIBIDA	
+MIN_DEZ_SHOW:
+    CMP MIN_DEZ, 30H
+    JE MIN_DEZ_0
+    CMP MIN_DEZ, 31H 
+    JE MIN_DEZ_1
+    CMP MIN_DEZ, 32H 
+    JE MIN_DEZ_2
+    CMP MIN_DEZ, 33H 
+    JE MIN_DEZ_3
+    CMP MIN_DEZ, 34H
+    JE MIN_DEZ_4
+    CMP MIN_DEZ, 35H 
+    JE MIN_DEZ_5
 
-;Verificando que número da dezena das horas deve ser exibida
-hor_dez_show:
-    cmp hor_dez, 30h
-    je hor_dez_0
-    cmp hor_dez, 31h 
-    je hor_dez_1
-    cmp hor_dez, 32h 
-    je hor_dez_2
+;ROTINA VERIFICANDO QUE NÚMERO DA UNIDADE DAS HORAS DEVE SER EXIBIDA
+HOR_UNI_SHOW:
+    CMP HOR_UNI, 30H
+    JE HOR_UNI_0
+    CMP HOR_UNI, 31H 
+    JE HOR_UNI_1
+    CMP HOR_UNI, 32H 
+    JE HOR_UNI_2
+    CMP HOR_UNI, 33H 
+    JE HOR_UNI_3
+    CMP HOR_UNI, 34H
+    JE HOR_UNI_4
+    CMP HOR_UNI, 35H 
+    JE HOR_UNI_5
+    CMP HOR_UNI, 36H 
+    JE HOR_UNI_6
+    CMP HOR_UNI, 37H 
+    JE HOR_UNI_7
+    CMP HOR_UNI, 38H 
+    JE HOR_UNI_8
+    CMP HOR_UNI, 39H
+    JE HOR_UNI_9
+
+;ROTINA VERIFICANDO QUE NÚMERO DA DEZENA DAS HORAS DEVE SER EXIBIDA
+HOR_DEZ_SHOW:
+    CMP HOR_DEZ, 30H
+    JE HOR_DEZ_0
+    CMP HOR_DEZ, 31H 
+    JE HOR_DEZ_1
+    CMP HOR_DEZ, 32H 
+    JE HOR_DEZ_2
     
-;Mostrando dígitos da unidade dos segundos 0-9 
-seg_uni_0:
+;ROTINA MOSTRANDO DÍGITOS DA UNIDADE DOS SEGUNDOS 0-9 
+SEG_UNI_0:
     MOV DX, IO0
-    MOV AL, DIG0
-    OUT DX, AL
-    ret
-seg_uni_1:
-    MOV DX, IO0
-    MOV AL, DIG1
+    MOV AL, ZERO
     OUT DX, AL
     RET
-seg_uni_2:
+SEG_UNI_1:
     MOV DX, IO0
-    MOV AL, DIG2
+    MOV AL, ONE
     OUT DX, AL
     RET
-seg_uni_3:
+SEG_UNI_2:
     MOV DX, IO0
-    MOV AL, DIG3
+    MOV AL, TWO
     OUT DX, AL
     RET
-seg_uni_4:
+SEG_UNI_3:
     MOV DX, IO0
-    MOV AL, DIG4
+    MOV AL, THREE
     OUT DX, AL
     RET
-seg_uni_5:
+SEG_UNI_4:
     MOV DX, IO0
-    MOV AL, DIG5
+    MOV AL, FOUR
     OUT DX, AL
     RET
-seg_uni_6:
+SEG_UNI_5:
     MOV DX, IO0
-    MOV AL, DIG6
+    MOV AL, FIVE
     OUT DX, AL
     RET
-seg_uni_7:
+SEG_UNI_6:
     MOV DX, IO0
-    MOV AL, DIG7
+    MOV AL, SIX
     OUT DX, AL
     RET
-seg_uni_8:
+SEG_UNI_7:
     MOV DX, IO0
-    MOV AL, DIG8
+    MOV AL, SEVEN
     OUT DX, AL
     RET
-seg_uni_9:
+SEG_UNI_8:
     MOV DX, IO0
-    MOV AL, DIG9
+    MOV AL, EIGHT
+    OUT DX, AL
+    RET
+SEG_UNI_9:
+    MOV DX, IO0
+    MOV AL, NINE
     OUT DX, AL
     RET
 
-;Mostrando dígitos da dezena dos segundos 0-6
-seg_dez_0:
+;ROTINA QUE MOSTRANDO DÍGITOS DA DEZENA DOS SEGUNDOS 0-6
+SEG_DEZ_0:
     MOV DX, IO1
-    MOV AL, DIG0
+    MOV AL, ZERO
     OUT DX, AL
-    jmp seg_uni_show
-seg_dez_1:
+    JMP SEG_UNI_SHOW
+SEG_DEZ_1:
     MOV DX, IO1
-    MOV AL, DIG1
+    MOV AL, ONE
     OUT DX, AL
-    jmp seg_uni_show
-seg_dez_2:
+    JMP SEG_UNI_SHOW
+SEG_DEZ_2:
     MOV DX, IO1
-    MOV AL, DIG2
+    MOV AL, TWO
     OUT DX, AL
-    jmp seg_uni_show
-seg_dez_3:
+    JMP SEG_UNI_SHOW
+SEG_DEZ_3:
     MOV DX, IO1
-    MOV AL, DIG3
+    MOV AL, THREE
     OUT DX, AL
-    jmp seg_uni_show
-seg_dez_4:
+    JMP SEG_UNI_SHOW
+SEG_DEZ_4:
     MOV DX, IO1
-    MOV AL, DIG4
+    MOV AL, FOUR
     OUT DX, AL
-    jmp seg_uni_show
-seg_dez_5:
+    JMP SEG_UNI_SHOW
+SEG_DEZ_5:
     MOV DX, IO1
-    MOV AL, DIG5
+    MOV AL, FIVE
     OUT DX, AL
-    jmp seg_uni_show
-seg_dez_6:
+    JMP SEG_UNI_SHOW
+SEG_DEZ_6:
     MOV DX, IO1
-    MOV AL, DIG6
+    MOV AL, SIX
     OUT DX, AL
-    jmp seg_uni_show
+    JMP SEG_UNI_SHOW
 
-;Mostrando dígitos da unidade dos minutos 0-9 
-min_uni_0:
+;ROTINA QUE MOSTRANDO DÍGITOS DA UNIDADE DOS MINUTOS 0-9 
+MIN_UNI_0:
     MOV DX, IO2
-    MOV AL, DIG0
+    MOV AL, ZERO
     OUT DX, AL
-    jmp seg_dez_show
-min_uni_1:
+    JMP SEG_DEZ_SHOW
+MIN_UNI_1:
     MOV DX, IO2
-    MOV AL, DIG1
+    MOV AL, ONE
     OUT DX, AL
-    jmp seg_dez_show
-min_uni_2:
+    JMP SEG_DEZ_SHOW
+MIN_UNI_2:
     MOV DX, IO2
-    MOV AL, DIG2
+    MOV AL, TWO
     OUT DX, AL
-    jmp seg_dez_show
-min_uni_3:
+    JMP SEG_DEZ_SHOW
+MIN_UNI_3:
     MOV DX, IO2
-    MOV AL, DIG3
+    MOV AL, THREE
     OUT DX, AL
-    jmp seg_dez_show
-min_uni_4:
+    JMP SEG_DEZ_SHOW
+MIN_UNI_4:
     MOV DX, IO2
-    MOV AL, DIG4
+    MOV AL, FOUR
     OUT DX, AL
-    jmp seg_dez_show
-min_uni_5:
+    JMP SEG_DEZ_SHOW
+MIN_UNI_5:
     MOV DX, IO2
-    MOV AL, DIG5
+    MOV AL, FIVE
     OUT DX, AL
-    jmp seg_dez_show
-min_uni_6:
+    JMP SEG_DEZ_SHOW
+MIN_UNI_6:
     MOV DX, IO2
-    MOV AL, DIG6
+    MOV AL, SIX
     OUT DX, AL
-    jmp seg_dez_show
-min_uni_7:
+    JMP SEG_DEZ_SHOW
+MIN_UNI_7:
     MOV DX, IO2
-    MOV AL, DIG7
+    MOV AL, SEVEN
     OUT DX, AL
-    jmp seg_dez_show
-min_uni_8:
+    JMP SEG_DEZ_SHOW
+MIN_UNI_8:
     MOV DX, IO2
-    MOV AL, DIG8
+    MOV AL, EIGHT
     OUT DX, AL
-    jmp seg_dez_show
-min_uni_9:
+    JMP SEG_DEZ_SHOW
+MIN_UNI_9:
     MOV DX, IO2
-    MOV AL, DIG9
+    MOV AL, NINE
     OUT DX, AL
-    jmp seg_dez_show
+    JMP SEG_DEZ_SHOW
 
-;Mostrando dígitos da dezena dos minutos 0-6
-min_dez_0:
+;ROTINA QUE MOSTRANDO DÍGITOS DA DEZENA DOS MINUTOS 0-6
+MIN_DEZ_0:
     MOV DX, IO3
-    MOV AL, DIG0
+    MOV AL, ZERO
     OUT DX, AL
-    jmp min_uni_show
-min_dez_1:
+    JMP MIN_UNI_SHOW
+MIN_DEZ_1:
     MOV DX, IO3
-    MOV AL, DIG1
+    MOV AL, ONE
     OUT DX, AL
-    jmp min_uni_show
-min_dez_2:
+    JMP MIN_UNI_SHOW
+MIN_DEZ_2:
     MOV DX, IO3
-    MOV AL, DIG2
+    MOV AL, TWO
     OUT DX, AL
-    jmp min_uni_show
-min_dez_3:
+    JMP MIN_UNI_SHOW
+MIN_DEZ_3:
     MOV DX, IO3
-    MOV AL, DIG3
+    MOV AL, THREE
     OUT DX, AL
-    jmp min_uni_show
-min_dez_4:
+    JMP MIN_UNI_SHOW
+MIN_DEZ_4:
     MOV DX, IO3
-    MOV AL, DIG4
+    MOV AL, FOUR
     OUT DX, AL
-    jmp min_uni_show
-min_dez_5:
+    JMP MIN_UNI_SHOW
+MIN_DEZ_5:
     MOV DX, IO3
-    MOV AL, DIG5
+    MOV AL, FIVE
     OUT DX, AL
-    jmp min_uni_show
-min_dez_6:
+    JMP MIN_UNI_SHOW
+MIN_DEZ_6:
     MOV DX, IO3
-    MOV AL, DIG6
+    MOV AL, SIX
     OUT DX, AL
-    jmp min_uni_show
+    JMP MIN_UNI_SHOW
 
-;Mostrando dígitos da unidade das horas 0-9 
-hor_uni_0:
+;ROTINA QUE MOSTRANDO DÍGITOS DA UNIDADE DAS HORAS 0-9 
+HOR_UNI_0:
     MOV DX, IO4
-    MOV AL, DIG0
+    MOV AL, ZERO
     OUT DX, AL
-    jmp min_dez_show
-hor_uni_1:
+    JMP MIN_DEZ_SHOW
+HOR_UNI_1:
     MOV DX, IO4
-    MOV AL, DIG1
+    MOV AL, ONE
     OUT DX, AL
-    jmp min_dez_show
-hor_uni_2:
+    JMP MIN_DEZ_SHOW
+HOR_UNI_2:
     MOV DX, IO4
-    MOV AL, DIG2
+    MOV AL, TWO
     OUT DX, AL
-    jmp min_dez_show
-hor_uni_3:
+    JMP MIN_DEZ_SHOW
+HOR_UNI_3:
     MOV DX, IO4
-    MOV AL, DIG3
+    MOV AL, THREE
     OUT DX, AL
-    jmp min_dez_show
-hor_uni_4:
+    JMP MIN_DEZ_SHOW
+HOR_UNI_4:
     MOV DX, IO4
-    MOV AL, DIG4
+    MOV AL, FOUR
     OUT DX, AL
-    jmp min_dez_show
-hor_uni_5:
+    JMP MIN_DEZ_SHOW
+HOR_UNI_5:
     MOV DX, IO4
-    MOV AL, DIG5
+    MOV AL, FIVE
     OUT DX, AL
-    jmp min_dez_show
-hor_uni_6:
+    JMP MIN_DEZ_SHOW
+HOR_UNI_6:
     MOV DX, IO4
-    MOV AL, DIG6
+    MOV AL, SIX
     OUT DX, AL
-    jmp min_dez_show
-hor_uni_7:
+    JMP MIN_DEZ_SHOW
+HOR_UNI_7:
     MOV DX, IO4
-    MOV AL, DIG7
+    MOV AL, SEVEN
     OUT DX, AL
-    jmp min_dez_show
-hor_uni_8:
+    JMP MIN_DEZ_SHOW
+HOR_UNI_8:
     MOV DX, IO4
-    MOV AL, DIG8
+    MOV AL, EIGHT
     OUT DX, AL
-    jmp min_dez_show
-hor_uni_9:
+    JMP MIN_DEZ_SHOW
+HOR_UNI_9:
     MOV DX, IO4
-    MOV AL, DIG9
+    MOV AL, NINE
     OUT DX, AL
-    jmp min_dez_show   
+    JMP MIN_DEZ_SHOW   
 
-;Mostrando dígitos da dezena das horas 0-6
-hor_dez_0:
+;ROTINA QUE MOSTRANDO DÍGITOS DA DEZENA DAS HORAS 0-6
+HOR_DEZ_0:
     MOV DX, IO5
-    MOV AL, DIG0
+    MOV AL, ZERO
     OUT DX, AL
-    jmp hor_uni_show
-hor_dez_1:
+    JMP HOR_UNI_SHOW
+HOR_DEZ_1:
     MOV DX, IO5
-    MOV AL, DIG1
+    MOV AL, ONE
     OUT DX, AL
-    jmp hor_uni_show
-hor_dez_2:
+    JMP HOR_UNI_SHOW
+HOR_DEZ_2:
     MOV DX, IO5
-    MOV AL, DIG2
+    MOV AL, TWO
     OUT DX, AL
-    jmp hor_uni_show
-hor_dez_3:
+    JMP HOR_UNI_SHOW
+HOR_DEZ_3:
     MOV DX, IO5
-    MOV AL, DIG3
+    MOV AL, THREE
     OUT DX, AL
-    jmp hor_uni_show
-hor_dez_4:
+    JMP HOR_UNI_SHOW
+HOR_DEZ_4:
     MOV DX, IO5
-    MOV AL, DIG4
+    MOV AL, FOUR
     OUT DX, AL
-    jmp hor_uni_show
-hor_dez_5:
+    JMP HOR_UNI_SHOW
+HOR_DEZ_5:
     MOV DX, IO5
-    MOV AL, DIG5
+    MOV AL, FIVE
     OUT DX, AL
-    jmp hor_uni_show
-hor_dez_6:
+    JMP HOR_UNI_SHOW
+HOR_DEZ_6:
     MOV DX, IO5
-    MOV AL, DIG6
+    MOV AL, SIX
     OUT DX, AL
-    jmp hor_uni_show  
+    JMP HOR_UNI_SHOW  
     
 JMP ZERA
 
+; ROTINA RESPONSAVEL POR CONFIGURAR A INICIALIZACAO DO TERMINAL
 INICIALIZA_8251:                                     
    MOV AL,0
-   MOV DX, ADR_USART_CMD
+   MOV DX, ADR_USART_CMD ;INFORMA QUE SERÁ ENVIAO UM COMANDOPARA O TERMINAL
    OUT DX,AL
    OUT DX,AL
    OUT DX,AL
@@ -599,6 +610,7 @@ INICIALIZA_8251:
 RECEBE_CARACTER:
    PUSHF
    PUSH DX
+   
 AGUARDA_CARACTER:
    MOV DX, ADR_USART_STAT
    IN  AL,DX
@@ -607,6 +619,7 @@ AGUARDA_CARACTER:
    MOV DX, ADR_USART_DATA
    IN AL,DX
    SHR AL,1
+
 NAO_RECEBIDO:
    POP DX
    POPF
@@ -629,79 +642,79 @@ BUSY:
    RET
 
 ECOAR_LEITURA_DESPERTADOR:
-	CALL RECEBE_CARACTER
-	DESPERTADOR:
-	CMP leu_horas, 00h
-	JE LER_HORA_DESPERTADOR
-	CMP leu_minutos, 00h
-	JE LER_MINUTO_DESPERTADOR
-	CMP leu_segundos, 00h
-	JE LER_SEGUNDO_DESPERTADOR
-	CALL MANDA_CARACTER	
+   CALL RECEBE_CARACTER
+   DESPERTADOR:
+   CMP LEU_HORAS, 00H
+   JE LER_HORA_DESPERTADOR
+   CMP LEU_MINUTOS, 00H
+   JE LER_MINUTO_DESPERTADOR
+   CMP LEU_SEGUNDOS, 00H
+   JE LER_SEGUNDO_DESPERTADOR
+   CALL MANDA_CARACTER	
 
 LER_HORA_DESPERTADOR:
    CALL MOSTRAR_MSG_HORAS
-   CMP digitou_dezena, 00h
+   CMP DIGITOU_DEZENA, 00H
    JE LER_DEZ_H
    JMP LER_UNI_H
 
 LER_MINUTO_DESPERTADOR:
    CALL MOSTRAR_MSG_MINUTOS
-   CMP digitou_dezena, 00h
+   CMP DIGITOU_DEZENA, 00H
    JE LER_DEZ_M
    JMP LER_UNI_M
    
 LER_SEGUNDO_DESPERTADOR:
    CALL MOSTRAR_MSG_SEGUNDOS
-   CMP digitou_dezena, 00h
+   CMP DIGITOU_DEZENA, 00H
    JE LER_DEZ_S
    JMP LER_UNI_S
    
  ; LE OS VALORES
 LER_UNI_H:
-   MOV hor_uni_des, AL
-   MOV digitou_dezena, 00H
+   MOV HOR_UNI_DES, AL
+   MOV DIGITOU_DEZENA, 00H
    CALL MANDA_CARACTER
    MOV AX, 13
    CALL MANDA_CARACTER
-   INC leu_horas
+   INC LEU_HORAS
    JMP DESPERTADOR
 
 LER_DEZ_H: 
-   MOV hor_dez_des, AL
-   INC digitou_dezena
+   MOV HOR_DEZ_DES, AL
+   INC DIGITOU_DEZENA
    CALL MANDA_CARACTER
    JMP ECOAR_LEITURA_DESPERTADOR
    
    
 LER_UNI_M:
-   MOV min_uni_des, AL
-   MOV digitou_dezena, 00H
+   MOV MIN_UNI_DES, AL
+   MOV DIGITOU_DEZENA, 00H
    CALL MANDA_CARACTER
    MOV AX, 13
    CALL MANDA_CARACTER
-   INC leu_minutos
+   INC LEU_MINUTOS
    JMP DESPERTADOR
 
 LER_DEZ_M: 
-   MOV min_dez_des, AL
-   INC digitou_dezena
+   MOV MIN_DEZ_DES, AL
+   INC DIGITOU_DEZENA
    CALL MANDA_CARACTER
    JMP ECOAR_LEITURA_DESPERTADOR
    
    
 LER_UNI_S:
-   MOV seg_uni_des, AL
-   MOV digitou_dezena, 00H
+   MOV SEG_UNI_DES, AL
+   MOV DIGITOU_DEZENA, 00H
    CALL MANDA_CARACTER
    MOV AX, 13
    CALL MANDA_CARACTER
-   INC leu_segundos
+   INC LEU_SEGUNDOS
    JMP MOSTRAR_DESPERTADOR
 
 LER_DEZ_S: 
-   MOV seg_dez_des, AL
-   INC digitou_dezena
+   MOV SEG_DEZ_DES, AL
+   INC DIGITOU_DEZENA
    CALL MANDA_CARACTER
    JMP ECOAR_LEITURA_DESPERTADOR
    
@@ -716,85 +729,85 @@ FIM_MOSTRAR_BX:
    RET
    
 MOSTRAR_MSG_HORAS:
-   CMP mostrou_msg_h, 00h
+   CMP MOSTROU_MSG_H, 00H
    JNE RETORNO
    LEA BX, MSG_DESP_H
    CALL MOSTRAR_BX
-   INC mostrou_msg_h
+   INC MOSTROU_MSG_H
    JMP ECOAR_LEITURA_DESPERTADOR
 MOSTRAR_MSG_MINUTOS:
-   CMP mostrou_msg_m, 00h
+   CMP MOSTROU_MSG_M, 00H
    JNE RETORNO
    LEA BX, MSG_DESP_M
    CALL MOSTRAR_BX
-   INC mostrou_msg_m
+   INC MOSTROU_MSG_M
    JMP ECOAR_LEITURA_DESPERTADOR
 
 MOSTRAR_MSG_SEGUNDOS:
-   CMP mostrou_msg_s, 00h
+   CMP MOSTROU_MSG_S, 00H
    JNE RETORNO
    LEA BX, MSG_DESP_S
    CALL MOSTRAR_BX
-   INC mostrou_msg_s
+   INC MOSTROU_MSG_S
    JMP ECOAR_LEITURA_DESPERTADOR
 RETORNO:
-   ret
+   RET
    
 MOSTRAR_DESPERTADOR:
    LEA BX, MSG_DESPERTADOR
    CALL MOSTRAR_BX
    
-   MOV AL, hor_dez_des
+   MOV AL, HOR_DEZ_DES
    CALL MANDA_CARACTER
-   MOV AL, hor_uni_des
-   CALL MANDA_CARACTER
-   
-   LEA BX, DOIS_PONTOS
-   CALL MOSTRAR_BX
-   
-   MOV AL, min_dez_des
-   CALL MANDA_CARACTER
-   MOV AL, min_uni_des
+   MOV AL, HOR_UNI_DES
    CALL MANDA_CARACTER
    
    LEA BX, DOIS_PONTOS
    CALL MOSTRAR_BX
    
-   MOV AL, seg_dez_des
+   MOV AL, MIN_DEZ_DES
    CALL MANDA_CARACTER
-   MOV AL, seg_uni_des
+   MOV AL, MIN_UNI_DES
+   CALL MANDA_CARACTER
+   
+   LEA BX, DOIS_PONTOS
+   CALL MOSTRAR_BX
+   
+   MOV AL, SEG_DEZ_DES
+   CALL MANDA_CARACTER
+   MOV AL, SEG_UNI_DES
    CALL MANDA_CARACTER
    
    JMP LOOP_INI
    
 VERIFICA_DESPERTADOR:
-   MOV AL, hor_dez
-   CMP AL, hor_dez_des
-   JE comp_hor_uni
+   MOV AL, HOR_DEZ
+   CMP AL, HOR_DEZ_DES
+   JE COMP_HOR_UNI
    RET
-comp_hor_uni:
-   MOV AL, hor_uni
-   CMP AL, hor_uni_des
-   JE comp_min_dez
+COMP_HOR_UNI:
+   MOV AL, HOR_UNI
+   CMP AL, HOR_UNI_DES
+   JE COMP_MIN_DEZ
    RET
-comp_min_dez:
-   MOV AL, min_dez
-   CMP AL, min_dez_des
-   JE comp_min_uni
+COMP_MIN_DEZ:
+   MOV AL, MIN_DEZ
+   CMP AL, MIN_DEZ_DES
+   JE COMP_MIN_UNI
    RET
-comp_min_uni:
-   MOV AL, min_uni
-   CMP AL, min_uni_des
-   JE comp_seg_dez
+COMP_MIN_UNI:
+   MOV AL, MIN_UNI
+   CMP AL, MIN_UNI_DES
+   JE COMP_SEG_DEZ
    RET
-comp_seg_dez:
-   MOV AL, seg_dez
-   CMP AL, seg_dez_des
-   JE comp_seg_uni
+COMP_SEG_DEZ:
+   MOV AL, SEG_DEZ
+   CMP AL, SEG_DEZ_DES
+   JE COMP_SEG_UNI
    RET
-comp_seg_uni:
-   MOV AL, seg_uni
-   CMP AL, seg_uni_des
+COMP_SEG_UNI:
+   MOV AL, SEG_UNI
+   CMP AL, SEG_UNI_DES
    JE DESPERTAR
    RET
 DESPERTAR:
@@ -805,12 +818,12 @@ DESPERTAR:
 
 ;MEUS DADOS
 .DATA
-    seg_uni db 30h
-    seg_dez db 30h
-    min_uni db 30h
-    min_dez db 30h
-    hor_uni db 30h
-    hor_dez db 30h
+    SEG_UNI DB 30H
+    SEG_DEZ DB 30H
+    MIN_UNI DB 30H
+    MIN_DEZ DB 30H
+    HOR_UNI DB 30H
+    HOR_DEZ DB 30H
     
     MSG_INI_H  DB "DIGITE AS HORAS INICIAIS",13,10,0
     MSG_INI_M  DB "DIGITE OS MINUTOS INICIAIS",13,10,0
@@ -821,20 +834,20 @@ DESPERTAR:
     MSG_DESPERTADOR DB "O DESPERTADOR IRA TOCAR AS ",0
     DOIS_PONTOS DB ":",0
     
-    seg_uni_des db 00h
-    seg_dez_des db 00h
-    min_uni_des db 00h
-    min_dez_des db 00h
-    hor_uni_des db 00h
-    hor_dez_des db 00h
+    SEG_UNI_DES DB 00H
+    SEG_DEZ_DES DB 00H
+    MIN_UNI_DES DB 00H
+    MIN_DEZ_DES DB 00H
+    HOR_UNI_DES DB 00H
+    HOR_DEZ_DES DB 00H
     
-    digitou_dezena db 00h
-    leu_horas db 00h
-    leu_minutos db 00h
-    leu_segundos db 00h
-    mostrou_msg_h db 00h
-    mostrou_msg_m db 00h
-    mostrou_msg_s db 00h
+    DIGITOU_DEZENA DB 00H
+    LEU_HORAS DB 00H
+    LEU_MINUTOS DB 00H
+    LEU_SEGUNDOS DB 00H
+    MOSTROU_MSG_H DB 00H
+    MOSTROU_MSG_M DB 00H
+    MOSTROU_MSG_S DB 00H
     
     
     CONTADOR_SEGUNDOS DB 0
